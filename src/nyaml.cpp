@@ -1,11 +1,47 @@
-#include <iostream>
+#include <algorithm>
+#include <string>
 #include <yaml-cpp/yaml.h>
 #include <neko.h>
 
 using namespace std;
 using namespace YAML;
 
+
+int lower_case (int c) {
+	return tolower (c);
+}
+
+int lowerCompare(string in, string cmp) {
+	transform(in.begin(), in.end(), in.begin(), ::tolower);
+	if (in == cmp)
+		return 1;
+	return 0;	
+}
+
 value parseSkalar(string in) {
+	
+	string cmp("true");
+	if (lowerCompare(in,cmp))
+		return val_true;
+	else {
+		cmp.assign("false");
+		if (lowerCompare(in,cmp))
+			return val_false;
+		else {
+			int i = atoi(in.c_str());
+			ostringstream s; 
+			if (s << i)
+				if (in==s.str())
+					return alloc_int(i);
+					
+			double f = atof(in.c_str());
+			ostringstream sf;
+			if (sf << f)
+				if (in == sf.str())
+					return alloc_float(f);
+		}
+		
+	}
 	return alloc_string(in.c_str());
 }
 
