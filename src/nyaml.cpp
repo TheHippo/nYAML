@@ -93,19 +93,19 @@ value decode(value str) {
 	istringstream stream;
 	stream.str(cstr);
 	Parser parser(stream);
-	
+
 	list<value> documents;
-	
+
 	Node doc;
-    while(parser.GetNextDocument(doc)) {
+	while(parser.GetNextDocument(doc)) {
 		value ndoc = traverse(doc);
 		documents.push_back(ndoc);		
-    }
-    
-    unsigned int size = documents.size();
-    value ret = alloc_array(size);
-    value  *ptr = val_array_ptr(ret);
-    for (unsigned int i=0; i<size; i++) {
+	}
+
+	unsigned int size = documents.size();
+	value ret = alloc_array(size);
+	value  *ptr = val_array_ptr(ret);
+	for (unsigned int i=0; i<size; i++) {
 		ptr[i] = documents.front();
 		documents.pop_front();
 	};
