@@ -1,7 +1,7 @@
 NEKOPATH = /usr/lib/neko/include/
 CC = c++
 CFLAGS = -Wall -shared -I$(NEKOPATH) -fPIC
-LDFLAGS = -static -s -lyaml-cpp
+LDFLAGS = -lyaml-cpp -lneko
 
 OUT = nyaml.ndll
 
