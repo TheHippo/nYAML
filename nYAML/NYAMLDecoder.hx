@@ -7,8 +7,8 @@ class NYAMLDecoder {
 	var data:Dynamic;
 	
 	public function new(s:String)
-		data = NYAMLDecoder.decode(untyped s.__s)
+		data = neko.Lib.nekoToHaxe(NYAMLDecoder.decode(untyped s.__s))
 	
-	public inline function getData():Dynamic
+	public inline function getData():Array<Dynamic>
 		return data
 }

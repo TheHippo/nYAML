@@ -1,7 +1,8 @@
 test:
-  -foo: bar
-  -test: true
-  -bar: 13
-  -arr: [1,2,3]
+  foo: bar
+  #bar: test
+  test: true
+#  -bar: 13
+  arr: [1,2,3]
 ---
 foo

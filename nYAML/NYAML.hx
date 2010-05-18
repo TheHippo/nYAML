@@ -7,7 +7,7 @@ class NYAML {
 		return "";
 	}
 		
-	public static function decode(s:String):Dynamic
+	public static function decode(s:String):Array<Dynamic>
 		return new nYAML.NYAMLDecoder(s).getData()
 
 }

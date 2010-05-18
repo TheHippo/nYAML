@@ -5,42 +5,50 @@
 using namespace std;
 using namespace YAML;
 
-void traverse(const YAML::Node & node, unsigned int depth = 0) {
+value parseSkalar(string in) {
+	return alloc_string(in.c_str());
+}
+
+value traverse(const YAML::Node & node) {
     // recursive depth first
-    YAML::CONTENT_TYPE type = node.GetType();
-    string indent((size_t)depth, '\t');
+    CONTENT_TYPE type = node.GetType();
     string out;
-    switch (type)
-    {
-        case YAML::CT_SCALAR:
+    switch (type) {
+        case CT_SCALAR:
             node >> out;
-            cout << indent << "SCALAR: " << out << endl;
+            return parseSkalar(out);
             break;
-        case YAML::CT_SEQUENCE:
-            cout << indent << "SEQUENCE:" << endl;
-            for (unsigned int i = 0; i < node.size(); i++) {
-                const YAML::Node & subnode = node[i];
-                cout << indent << "[" << i << "]:" << endl;
-                traverse(subnode, depth + 1);
-            }
+        case CT_SEQUENCE:
+			{
+				value ret = alloc_array(node.size());
+				value *ptr = val_array_ptr(ret);
+				for (unsigned int i = 0; i < node.size(); i++) {
+					const Node & subnode = node[i];
+					ptr[i]=traverse(subnode);
+				}
+				return ret;
+			}
             break;
-        case YAML::CT_MAP:
-            cout << indent << "MAP:" << endl;
-            for (YAML::Iterator i = node.begin(); i != node.end(); ++i) {
-                const YAML::Node & key   = i.first();
-                const YAML::Node & value = i.second();
-                key >> out;
-                cout << indent << "KEY: " << out << endl;
-                cout << indent << "VALUE:" << endl;
-                traverse(value, depth + 1);
-            }
+        case CT_MAP:
+			{
+				value ret = alloc_object(NULL);
+				for (YAML::Iterator i = node.begin(); i != node.end(); ++i) {
+					const Node & key   = i.first();
+					const Node & value = i.second();
+					key >> out;
+					alloc_field(ret,val_id(out.c_str()),traverse(value));
+				}
+				return ret;
+			}
             break;
-        case YAML::CT_NONE:
-            cout << indent << "(empty)" << endl;
+        case CT_NONE:
+            return val_null;
             break;
         default:
-            cerr << "Warning: traverse: unknown/unsupported node type" << endl;
+            failure("Warning: traverse: unknown/unsupported node type");
+            break;
     }
+    return val_null;
 }
 
 value decode(value str) {
@@ -49,27 +57,23 @@ value decode(value str) {
 	istringstream stream;
 	stream.str(cstr);
 	Parser parser(stream);
+	
+	list<value> documents;
+	
 	Node doc;
     while(parser.GetNextDocument(doc)) {
-		traverse(doc);
-		switch (doc.GetType()) {
-			case CT_NONE:
-				cout << "null" << endl;
-				break;
-			case CT_SCALAR:
-				cout << "scalar" << endl;
-				break;
-			case CT_SEQUENCE:
-				cout << "sequence" << endl;
-				break;
-			case CT_MAP:
-				cout << "map" << endl;
-				break;
-			default:
-				break;
-		}
+		value ndoc = traverse(doc);
+		documents.push_back(ndoc);		
     }
-	return val_null;
+    
+    unsigned int size = documents.size();
+    value ret = alloc_array(size);
+    value  *ptr = val_array_ptr(ret);
+    for (unsigned int i=0; i<size; i++) {
+		ptr[i] = documents.front();
+		documents.pop_front();
+	};
+	return ret;
 }
 
 
