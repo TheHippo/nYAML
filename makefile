@@ -7,7 +7,7 @@ ifeq ($(uname_S),Linux)
 	CC = c++
 	CFLAGS = -Wall -shared -I$(NEKOPATH) -I$(YAML-PATH) -fPIC
 	NEKOPATH = /usr/lib/neko/include/
-	LDFLAGS = -lneko.dll
+	LDFLAGS = -lneko
 endif
 
 ifeq ($(uname_O),Cygwin)
