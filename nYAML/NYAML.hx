@@ -2,12 +2,10 @@ package nYAML;
 
 class NYAML {
 
-	public static function encode(o:Dynamic):String {
-		throw "not implemented yet!";
-		return "";
-	}
+	public inline static function encode(o:Array<Dynamic>):String
+		return new nYAML.NYAMLEncoder(o).getOutput()
 		
-	public static function decode(s:String):Array<Dynamic>
+	public inline static function decode(s:String):Array<Dynamic>
 		return new nYAML.NYAMLDecoder(s).getData()
 
 }

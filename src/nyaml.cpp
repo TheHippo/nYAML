@@ -112,6 +112,10 @@ value decode(value str) {
 	return ret;
 }
 
+value encode(value ar) {
+	return alloc_string("foo");
+}
+
 
 DEFINE_PRIM(decode,1);
-
+DEFINE_PRIM(encode,1);

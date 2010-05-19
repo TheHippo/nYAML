@@ -2,7 +2,7 @@ package nYAML;
 
 class NYAMLDecoder {
 
-	static var decode:String->Void = neko.Lib.load("nyaml","decode",1);
+	static var decode = neko.Lib.load("nyaml","decode",1);
 
 	var data:Dynamic;
 	
