@@ -1,0 +1,20 @@
+nYAML
+=====
+nYAML is a YAML decoding and encoding library for the nekoVM / haXe.
+It is based on yaml-cpp (http://code.google.com/p/yaml-cpp) by
+Jesse Beder.
+
+Usage
+-----
+As a YAML file could contain multiple documents nYAML always
+expects Array<Dynamic> as a representation for a whole YAML file.
+
+Decoding:
+var file : String = ... read file content ...;
+var documents : Array<Dynamic> = nYAML.NYAML.decode(file);
+
+Encoding:
+var objects : Array<Dynamic> = [ .... ];
+var yaml : String = nYAML.NYAML.encode(objects);
+
+
