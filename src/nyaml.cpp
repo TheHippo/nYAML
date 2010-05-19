@@ -45,7 +45,7 @@ value parseSkalar(string in) {
 	return alloc_string(in.c_str());
 }
 
-value traverse(const YAML::Node & node) {
+value traverse_decode(const YAML::Node & node) {
     // recursive depth first
     CONTENT_TYPE type = node.GetType();
     string out;
@@ -60,7 +60,7 @@ value traverse(const YAML::Node & node) {
 				value *ptr = val_array_ptr(ret);
 				for (unsigned int i = 0; i < node.size(); i++) {
 					const Node & subnode = node[i];
-					ptr[i]=traverse(subnode);
+					ptr[i]=traverse_decode(subnode);
 				}
 				return ret;
 			}
@@ -72,7 +72,7 @@ value traverse(const YAML::Node & node) {
 					const Node & key   = i.first();
 					const Node & value = i.second();
 					key >> out;
-					alloc_field(ret,val_id(out.c_str()),traverse(value));
+					alloc_field(ret,val_id(out.c_str()),traverse_decode(value));
 				}
 				return ret;
 			}
@@ -92,28 +92,42 @@ value decode(value str) {
 	string cstr(val_string(str));
 	istringstream stream;
 	stream.str(cstr);
-	Parser parser(stream);
+	try {
+		Parser parser(stream);
 
-	list<value> documents;
+		list<value> documents;
 
-	Node doc;
-	while(parser.GetNextDocument(doc)) {
-		value ndoc = traverse(doc);
-		documents.push_back(ndoc);		
+		Node doc;
+		while(parser.GetNextDocument(doc)) {
+			value ndoc = traverse_decode(doc);
+			if (!val_is_null(ndoc))
+				documents.push_back(ndoc);		
+		}
+
+		unsigned int size = documents.size();
+		value ret = alloc_array(size);
+		value  *ptr = val_array_ptr(ret);
+		for (unsigned int i=0; i<size; i++) {
+			ptr[i] = documents.front();
+			documents.pop_front();
+		};
+		return ret;
 	}
-
-	unsigned int size = documents.size();
-	value ret = alloc_array(size);
-	value  *ptr = val_array_ptr(ret);
-	for (unsigned int i=0; i<size; i++) {
-		ptr[i] = documents.front();
-		documents.pop_front();
-	};
-	return ret;
+	catch (ParserException& e) {
+		failure(e.what());
+		return val_null;
+	}
 }
 
 value encode(value ar) {
-	return alloc_string("foo");
+	if (val_is_function(ar) || val_is_abstract(ar)) {
+		failure("Could not input");
+		return val_null;
+	}
+	else {
+		
+		return alloc_string("foo");
+	}
 }
 
 
