@@ -1,0 +1,7 @@
+<project name="nYAML" url="http://github.com/TheHippo/nYAML" license="GPL">
+    <user name="TheHippo"/>
+    <tag v="neko"/>
+    <tag v="yaml"/>
+    <description>nYAML is a YAML decoding and encoding library for the nekoVM / haXe.</description>
+    <version name="0.1">First release, decoding and encoding works, binaries for Linux and Windows</version>
+</project>
