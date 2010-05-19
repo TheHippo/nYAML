@@ -17,6 +17,7 @@ src/%.o: src/%.cpp
 
 clean:
 	rm -f src/*.o
+	rm -f $(OUT)
 
 haxe:
 	haxe build.hxml

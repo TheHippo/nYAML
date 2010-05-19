@@ -10,7 +10,7 @@ class NYAMLEncoder {
 		var ret = new List<String>();
 		for (x in data)
 			ret.push(neko.Lib.nekoToHaxe(NYAMLEncoder.encode(neko.Lib.haxeToNeko(x))));
-		out = ret.join("\n---\n");
+		out = ret.join("\n");
 	}
 	
 	public inline function getOutput()

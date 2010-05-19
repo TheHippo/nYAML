@@ -6,11 +6,6 @@
 using namespace std;
 using namespace YAML;
 
-
-int lower_case (int c) {
-	return tolower (c);
-}
-
 int lowerCompare(string in, string cmp) {
 	transform(in.begin(), in.end(), in.begin(), ::tolower);
 	if (in == cmp)
@@ -28,17 +23,22 @@ value parseSkalar(string in) {
 		if (lowerCompare(in,cmp))
 			return val_false;
 		else {
-			int i = atoi(in.c_str());
-			ostringstream s; 
-			if (s << i)
-				if (in==s.str())
-					return alloc_int(i);
-					
-			double f = atof(in.c_str());
-			ostringstream sf;
-			if (sf << f)
-				if (in == sf.str())
-					return alloc_float(f);
+			cmp.assign("null");
+			if (lowerCompare(in,cmp))
+				return val_null;
+			else {
+				int i = atoi(in.c_str());
+				ostringstream s; 
+				if (s << i)
+					if (in==s.str())
+						return alloc_int(i);
+						
+				double f = atof(in.c_str());
+				ostringstream sf;
+				if (sf << f)
+					if (in == sf.str())
+						return alloc_float(f);
+			}
 		}
 		
 	}
@@ -46,7 +46,6 @@ value parseSkalar(string in) {
 }
 
 value traverse_decode(const YAML::Node & node) {
-    // recursive depth first
     CONTENT_TYPE type = node.GetType();
     string out;
     switch (type) {
@@ -98,12 +97,14 @@ value decode(value str) {
 		list<value> documents;
 
 		Node doc;
+		//process every document
 		while(parser.GetNextDocument(doc)) {
 			value ndoc = traverse_decode(doc);
 			if (!val_is_null(ndoc))
 				documents.push_back(ndoc);		
 		}
 
+		//pack documents into a neko array
 		unsigned int size = documents.size();
 		value ret = alloc_array(size);
 		value  *ptr = val_array_ptr(ret);
@@ -119,14 +120,86 @@ value decode(value str) {
 	}
 }
 
+void traverse_encode(value obj,Emitter &out);
+
+void iter_object(value obj, field f, void *p) {
+	list<field> *fields = (list<field>*)p;
+	fields->push_back(f);
+}
+
+void traverse_encode(value obj,Emitter &out) {
+	switch (val_type(obj)) {
+		case VAL_NULL:
+			out << "null";
+			break;
+		case VAL_INT:
+			out << val_int(obj);
+			break;
+		case VAL_FLOAT:
+			out << val_float(obj);
+			break;
+		case VAL_BOOL:
+			if (val_bool(obj))
+				out << "true";
+			else
+				out << "false";
+			break;
+		case VAL_ARRAY:
+			{
+				unsigned int size = val_array_size(obj);
+				value *ptr = val_array_ptr(obj);
+				/*if (size < 4) TODO: find a good criteria when to use flow
+					out << Flow; */
+				out << BeginSeq;				
+				for (unsigned int i = 0; i < size; i++) {
+					traverse_encode(ptr[i],out);
+				}
+				out << EndSeq;
+			}
+			break;
+		case VAL_FUNCTION:
+			failure("Coudl not encode function");
+			break;
+		case VAL_STRING:
+			out << val_string(obj);
+			break;
+		case VAL_OBJECT:
+			{
+				list<field> fields;
+				//get keys
+				val_iter_fields(obj,iter_object,&fields);
+				out << BeginMap;
+				field f;
+				while (!fields.empty()) { //iterate
+					f = fields.front();
+					out <<  Key << val_string(val_field_name(f));
+					fields.pop_front();
+					out << Value;
+					traverse_encode(val_field(obj,f),out);
+				}
+				out << EndMap;
+			}
+			break;
+		case VAL_ABSTRACT:
+			failure("Could not encode abstract");
+			break;
+		default:
+			failure("Unknown value type");
+			break;
+	}
+}
+
 value encode(value ar) {
 	if (val_is_function(ar) || val_is_abstract(ar)) {
-		failure("Could not input");
+		failure("Could not process input");
 		return val_null;
 	}
 	else {
-		
-		return alloc_string("foo");
+		Emitter out;
+		traverse_encode(ar,out);
+		if (!out.good())
+			failure(out.GetLastError().c_str());
+		return alloc_string(out.c_str());
 	}
 }
 
