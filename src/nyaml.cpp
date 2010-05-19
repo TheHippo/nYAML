@@ -3,6 +3,7 @@
 #include "../yaml-cpp/include/yaml.h"
 #include <neko.h>
 
+
 using namespace std;
 using namespace YAML;
 
@@ -148,8 +149,8 @@ void traverse_encode(value obj,Emitter &out) {
 			{
 				unsigned int size = val_array_size(obj);
 				value *ptr = val_array_ptr(obj);
-				/*if (size < 4) TODO: find a good criteria when to use flow
-					out << Flow; */
+				//if (size < 4) TODO: find a good criteria when to use flow
+				//	out << Flow;
 				out << BeginSeq;				
 				for (unsigned int i = 0; i < size; i++) {
 					traverse_encode(ptr[i],out);
@@ -202,7 +203,6 @@ value encode(value ar) {
 		return alloc_string(out.c_str());
 	}
 }
-
 
 DEFINE_PRIM(decode,1);
 DEFINE_PRIM(encode,1);

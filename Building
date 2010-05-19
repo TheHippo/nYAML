@@ -1,0 +1,12 @@
+Building
+========
+
+Linux:
+------
+- "make"
+
+Windows/Cygwin:
+---------------
+- ensure that you have the  mingw packages install
+- put a copy of the neko.dll in this directory
+- run "make" from the cygwin shell

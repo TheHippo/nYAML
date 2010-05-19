@@ -2,3 +2,4 @@ src/*.o
 *.ndll
 *.n
 yaml-cpp/src/*.o
+neko.dll
