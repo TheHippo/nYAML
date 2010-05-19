@@ -11,7 +11,7 @@ OBJ = src/nyaml.o
 YAML = yaml-cpp/src/aliascontent.o yaml-cpp/src/conversion.o yaml-cpp/src/emitter.o yaml-cpp/src/emitterstate.o yaml-cpp/src/emitterutils.o yaml-cpp/src/exp.o yaml-cpp/src/iterator.o yaml-cpp/src/map.o yaml-cpp/src/node.o yaml-cpp/src/null.o yaml-cpp/src/ostream.o yaml-cpp/src/parser.o yaml-cpp/src/parserstate.o yaml-cpp/src/regex.o yaml-cpp/src/scalar.o yaml-cpp/src/scanner.o yaml-cpp/src/scanscalar.o yaml-cpp/src/scantag.o yaml-cpp/src/scantoken.o yaml-cpp/src/sequence.o yaml-cpp/src/simplekey.o yaml-cpp/src/stream.o yaml-cpp/src/tag.o 
 
 all: $(OBJ) $(YAML)
-	$(CC) $(CFLAGS) -o $(OUT) $(OBJ) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(OUT) $(OBJ) $(YAML) $(LDFLAGS)
 
 src/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<

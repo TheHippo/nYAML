@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <string>
-#include <yaml-cpp/yaml.h>
+#include "../yaml-cpp/include/yaml.h"
 #include <neko.h>
 
 using namespace std;
