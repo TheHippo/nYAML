@@ -2,19 +2,18 @@ uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 
 YAML-PATH = yaml-cpp/include/
+CC = c++
 
 ifeq ($(uname_S),Linux)
-	CC = c++
 	CFLAGS = -Wall -shared -I$(NEKOPATH) -I$(YAML-PATH) -fPIC
 	NEKOPATH = /usr/lib/neko/include/
 	LDFLAGS = -lneko -static -s $(YAML_STATIC)
 endif
 
 ifeq ($(uname_O),Cygwin)
-	CC = c++
 	CFLAGS = -Wall -shared -I$(NEKOPATH) -I$(YAML-PATH)	-mno-cygwin
 	NEKOPATH = /cygdrive/c/Program\ Files/Motion-Twin/neko/include/
-	LDFLAGS = -L. -lneko -static -s $(YAML_STATIC)
+	LDFLAGS = -L. -Wl,-Bdynamic -lneko -Lyaml-cpp/ -Wl,-Bstatic,-s -lyaml-cpp
 endif
 
 OUT = nyaml.ndll
