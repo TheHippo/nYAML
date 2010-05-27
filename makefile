@@ -9,7 +9,8 @@ ifeq ($(uname_S),Linux)
 	NEKOPATH = /usr/lib/neko/include/
 	LDFLAGS = -lneko -static -s $(YAML_STATIC)
 endif
-
+ifeq ($(uname_S),Darwin)
+endif
 ifeq ($(uname_O),Cygwin)
 	CFLAGS = -Wall -shared -I$(NEKOPATH) -I$(YAML-PATH)	-mno-cygwin
 	NEKOPATH = /cygdrive/c/Program\ Files/Motion-Twin/neko/include/
