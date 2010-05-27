@@ -1,5 +1,5 @@
 src/*.o
-*.ndll
+/*.ndll
 *.n
 yaml-cpp/src/*.o
 neko.dll
